@@ -43,19 +43,19 @@ def import_data(folder_name):
          cursor.execute(drop_command)
       create_tables = ["""CREATE TABLE User(
           UID VARCHAR(50) PRIMARY KEY,
-          username VARCHAR(100) NOT NULL UNIQUE,
-          email VARCHAR(100) NOT NULL
+          email VARCHAR(100) NOT NULL,
+          username VARCHAR(100) NOT NULL UNIQUE
           )
           """,
 
          """CREATE TABLE AgentClient(
         UID VARCHAR(50) PRIMARY KEY,
-        card_number VARCHAR(50) NOT NULL,
+        interests TEXT,
         cardholder_name VARCHAR(50) NOT NULL,
         expiration_date DATE NOT NULL,
+        card_number VARCHAR(50) NOT NULL,
+        CVV VARCHAR(10) NOT NULL,
         zip VARCHAR(10) NOT NULL,
-        CVV VARCHAR(4) NOT NULL,
-        interests TEXT
         FOREIGN KEY (UID) REFERENCES User(UID)
                 ON DELETE CASCADE
         )
@@ -65,7 +65,7 @@ def import_data(folder_name):
         CREATE TABLE AgentCreator(
         UID VARCHAR(50) PRIMARY KEY,
         bio TEXT,
-        payout_account VARCHAR(50)
+        payout_account VARCHAR(50),
         FOREIGN KEY (UID) REFERENCES User(UID)
                 ON DELETE CASCADE
         )
@@ -74,8 +74,8 @@ def import_data(folder_name):
         """
         CREATE TABLE BaseModel(
         BMID VARCHAR(50) PRIMARY KEY,
-        description TEXT
         creator_uid   VARCHAR(50) NOT NULL,
+        description TEXT,
         FOREIGN KEY (creator_uid) REFERENCES AgentCreator(UID)
         )
         """,
@@ -93,8 +93,8 @@ def import_data(folder_name):
         CREATE TABLE Configuration (
         CID       VARCHAR(50) PRIMARY KEY,
         client_uid VARCHAR(50) NOT NULL,
-        label      VARCHAR(255),
         content    TEXT,
+        label      VARCHAR(255),
         FOREIGN KEY (client_uid) REFERENCES AgentClient(UID)
             ON DELETE CASCADE)
         """,
@@ -103,7 +103,7 @@ def import_data(folder_name):
         CREATE TABLE InternetService (
         sid       VARCHAR(50) PRIMARY KEY,
         provider  VARCHAR(255),
-        endpoint  VARCHAR(500))
+        endpoints  VARCHAR(500))
         """,
 
         """
@@ -136,9 +136,9 @@ def import_data(folder_name):
 
         """
         CREATE TABLE ModelConfigurations (
-        CID       VARCHAR(50) NOT NULL,
         BMID      VARCHAR(50) NOT NULL,
         MID       VARCHAR(50) NOT NULL,
+        CID       VARCHAR(50) NOT NULL,
         duration   INT,          
         PRIMARY KEY (CID, BMID, MID),
         FOREIGN KEY (CID) REFERENCES Configuration(CID)
