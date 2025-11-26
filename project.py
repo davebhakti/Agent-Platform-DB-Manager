@@ -180,6 +180,50 @@ def import_data(folder_name):
       conn.close()
 
     except Exception as e:
-      print("Fail")
       if conn:
         conn.rollback()
+
+def insert_agent_client(uid, username, email, card_number, card_holder, expiration_date, cvv, zip_code, interests):
+    try:
+      conn = get_connected()
+      if not conn:
+         return
+      cursor = conn.cursor()
+      cursor.execute("INSERT INTO User (UID, username, email) VALUES (%s, %s, %s)", (uid, username, email))
+      cursor.execute(
+            """INSERT INTO AgentClient 
+               (UID, card_number, card_holder, expiration_date, CVV, zip, interests) 
+               VALUES (%s, %s, %s, %s, %s, %s, %s)""",
+            (uid, card_number, card_holder, expiration_date, cvv, zip_code, interests))
+      conn.commit()
+      cursor.close()
+      conn.close()
+
+    except Exception as e:
+      if conn:
+          conn.rollback()
+
+def list_base_model_keyword(keyword):
+    try:
+      conn = get_connected()
+      if not conn:
+          return
+      cursor = conn.cursor()
+      query = """
+            SELECT DISTINCT b.BMID, l.SID, i.provider, l.domain
+            FROM Base_Model b
+            JOIN utilize u ON b.BMID = u.BMID
+            JOIN LLM_Service l ON u.SID = l.SID
+            JOIN Internet_Service i ON l.SID = i.SID
+            WHERE l.domain LIKE %s
+            ORDER BY b.BMID ASC
+            LIMIT 5
+        """
+      cursor.execute(query, (f'%{keyword}%',))
+      results = cursor.fetchall()
+      for row in results:
+        print(f"{row[0]},{row[1]},{row[2]},{row[3]}")
+      cursor.close()
+      conn.close()
+    except Exception as e:
+        print(f"Error: {e}")
