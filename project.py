@@ -1,5 +1,7 @@
 import mysql.connector
 import sys
+from pathlib import Path
+import csv
 
 DB_CONFIG = {
     'host': 'localhost',
@@ -18,7 +20,7 @@ def get_connected():
       return None
   
 def import_data(folder_name):
-   try:
+    try:
       conn = get_connected()
       if not conn:
         print("Failed to import due to no connection to Database")
@@ -148,5 +150,36 @@ def import_data(folder_name):
 
       for create_command in create_tables:
          cursor.execute(create_command)
+      csv_files = {
+        'User.csv': 'User',
+        'AgentCreator.csv': 'AgentCreator',
+        'AgentClient.csv': 'AgentClient',
+        'Configuration.csv': 'Configuration',
+        'BaseModel.csv': 'BaseModel',
+        'CustomizedModel.csv': 'CustomizedModel',
+        'InternetService.csv': 'InternetService',
+        'LLMServie.csv': 'LLMService',
+        'DataStorage.csv': 'DataStorage',
+        'ModelServices.csv': 'ModelServices',
+        'ModelConfigurations.csv': 'ModelConfigurations'
+        }
       
-    except:
+      for csv_filename, table_name in csv_files.items():
+         file_path = Path(folder_name) / csv_filename
+         if file_path.exists():
+            with open(file_path, "r", encoding="utf-8") as filename:
+               csv_reader = csv.reader(filename)
+               next(csv_reader)
+               for row in csv_reader:
+                  row = [None if (val == '' or val == 'NULL') else val for val in row]
+                  placeholders = ', '.join(['%s'] * len(row))
+                  insert_stmt = f"INSERT INTO {table_name} VALUES ({placeholders})"
+                  cursor.execute(insert_stmt, row)
+      conn.commit()
+      cursor.close()
+      conn.close()
+
+    except Exception as e:
+      print("Fail")
+      if conn:
+        conn.rollback()
