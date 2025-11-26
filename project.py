@@ -39,5 +39,114 @@ def import_data(folder_name):
       ]
       for drop_command in drop_tables:
          cursor.execute(drop_command)
+      create_tables = ["""CREATE TABLE User(
+          UID VARCHAR(50) PRIMARY KEY,
+          username VARCHAR(100) NOT NULL UNIQUE,
+          email VARCHAR(100) NOT NULL
+          )
+          """,
+
+         """CREATE TABLE AgentClient(
+        UID VARCHAR(50) PRIMARY KEY,
+        card_number VARCHAR(50) NOT NULL,
+        cardholder_name VARCHAR(50) NOT NULL,
+        expiration_date DATE NOT NULL,
+        zip VARCHAR(10) NOT NULL,
+        CVV VARCHAR(4) NOT NULL,
+        interests TEXT
+        FOREIGN KEY (UID) REFERENCES User(UID)
+                ON DELETE CASCADE
+        )
+        """, 
+
+        """
+        CREATE TABLE AgentCreator(
+        UID VARCHAR(50) PRIMARY KEY,
+        bio TEXT,
+        payout_account VARCHAR(50)
+        FOREIGN KEY (UID) REFERENCES User(UID)
+                ON DELETE CASCADE
+        )
+        """,
+
+        """
+        CREATE TABLE BaseModel(
+        BMID VARCHAR(50) PRIMARY KEY,
+        description TEXT
+        creator_uid   VARCHAR(50) NOT NULL,
+        FOREIGN KEY (creator_uid) REFERENCES AgentCreator(UID)
+        )
+        """,
+
+        """
+        CREATE TABLE CustomizedModel (
+        BMID  INT NOT NULL,
+        MID   INT NOT NULL,
+        PRIMARY KEY (BMID, MID),
+        FOREIGN KEY (BMID) REFERENCES BaseModel(BMID)
+        ON DELETE CASCADE)
+        """,
+
+        """
+        CREATE TABLE Configuration (
+        CID       VARCHAR(50) PRIMARY KEY,
+        client_uid VARCHAR(50) NOT NULL,
+        label      VARCHAR(255),
+        content    TEXT,
+        FOREIGN KEY (client_uid) REFERENCES AgentClient(UID)
+            ON DELETE CASCADE)
+        """,
+
+        """
+        CREATE TABLE InternetService (
+        sid       VARCHAR(50) PRIMARY KEY,
+        provider  VARCHAR(255),
+        endpoint  VARCHAR(500))
+        """,
+
+        """
+        CREATE TABLE LLMService (
+        sid     VARCHAR(50) PRIMARY KEY,
+        domain  VARCHAR(255),
+        FOREIGN KEY (sid) REFERENCES InternetService(sid)
+            ON DELETE CASCADE
+        """,
+
+        """
+        CREATE TABLE DataStorage (
+        sid   VARCHAR(50) PRIMARY KEY,
+        type  VARCHAR(255),
+        FOREIGN KEY (sid) REFERENCES InternetService(sid)
+            ON DELETE CASCADE)
+        """,
+
+        """
+        CREATE TABLE ModelServices (
+        BMID    VARCHAR(50) NOT NULL,
+        sid      VARCHAR(50) NOT NULL,
+        version  VARCHAR(50),
+        PRIMARY KEY (BMID, sid),
+        FOREIGN KEY (BMID) REFERENCES BaseModel(BMID)
+            ON DELETE CASCADE,
+        FOREIGN KEY (sid) REFERENCES InternetService(sid)
+            ON DELETE CASCADE
+        """,
+
+        """
+        CREATE TABLE ModelConfigurations (
+        CID       VARCHAR(50) NOT NULL,
+        BMID      VARCHAR(50) NOT NULL,
+        MID       VARCHAR(50) NOT NULL,
+        duration   INT,          
+        PRIMARY KEY (CID, BMID, MID),
+        FOREIGN KEY (CID) REFERENCES Configuration(CID)
+            ON DELETE CASCADE,
+        FOREIGN KEY (BMID, MID) REFERENCES CustomizedModel(BMID, MID)
+            ON DELETE CASCADE)
+        """
+      ]
+
+      for create_command in create_tables:
+         cursor.execute(create_command)
       
     except:
