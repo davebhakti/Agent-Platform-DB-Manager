@@ -210,20 +210,24 @@ def list_base_model_keyword(keyword):
           return
       cursor = conn.cursor()
       query = """
-            SELECT DISTINCT b.BMID, l.SID, i.provider, l.domain
-            FROM Base_Model b
-            JOIN utilize u ON b.BMID = u.BMID
-            JOIN LLM_Service l ON u.SID = l.SID
-            JOIN Internet_Service i ON l.SID = i.SID
-            WHERE l.domain LIKE %s
-            ORDER BY b.BMID ASC
-            LIMIT 5
-        """
+          SELECT DISTINCT b.BMID, l.sid, i.provider, l.domain
+          FROM BaseModel b
+          JOIN ModelServices ms ON b.BMID = ms.BMID
+          JOIN LLMService l ON ms.sid = l.sid
+          JOIN InternetService i ON l.sid = i.sid
+          WHERE l.domain LIKE %s
+          ORDER BY b.BMID ASC
+          LIMIT 5
+      """
+      
       cursor.execute(query, (f'%{keyword}%',))
       results = cursor.fetchall()
+      
       for row in results:
-        print(f"{row[0]},{row[1]},{row[2]},{row[3]}")
+          print(f"{row[0]},{row[1]},{row[2]},{row[3]}")
+      
       cursor.close()
       conn.close()
+        
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error: {e}", file=sys.stderr)
