@@ -188,7 +188,7 @@ def insert_agent_client(uid, username, email, cardno, cardholder, expire, cvv, z
 
     except Exception:
         if conn:
-            conn.rollback(
+            conn.rollback()
         return False
     finally:
         if conn:
