@@ -274,7 +274,7 @@ def list_internet_service(bmid):
         rows = cursor.fetchall()
         return rows
         cursor.close()
-   except Exception:
+    except Exception:
         return []
 
     finally:
