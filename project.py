@@ -326,6 +326,37 @@ def count_customized_model(*bmid_list):
         if conn:
             conn.close()
 
+"""Question 7"""
+def topN_duration_config(uid, N):
+    conn = get_connection()
+    if conn is None:
+        return
+
+    try:
+        cursor = conn.cursor()
+
+        query = """
+            SELECT c.client_uid, mc.cid, c.labels, c.content, mc.duration
+            FROM ModelConfigurations mc
+            JOIN Configuration c ON mc.cid = c.cid
+            WHERE c.client_uid = %s
+            ORDER BY mc.duration DESC
+            LIMIT %s
+        """
+
+        cursor.execute(query, (uid, N))
+        rows = cursor.fetchall()
+
+        for row in rows:
+            print(f"{row[0]},{row[1]},{row[2]},{row[3]},{row[4]}")
+
+    except Exception as e:
+        print("False")
+        return
+
+    finally:
+        if conn:
+            conn.close()
 
 """Question 8"""
 def listBaseModelKeyword(keyword):
