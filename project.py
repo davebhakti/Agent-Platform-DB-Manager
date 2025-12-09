@@ -276,7 +276,6 @@ def list_internet_service(bmid):
         cursor.close()
     except Exception:
         return []
-
     finally:
         if conn:
             conn.close()
