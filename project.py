@@ -184,11 +184,12 @@ def insert_agent_client(uid, username, email, cardno, cardholder, expire, cvv, z
         )
 
         conn.commit()
+        print("Success")
         return True
-
-    except Exception:
+    except:
         if conn:
             conn.rollback()
+        print("Fail")
         return False
     finally:
         if conn:
@@ -211,14 +212,15 @@ def add_customized_model(mid, bmid):
         )
 
         conn.commit()
-        cursor.close()
+        print("Success")
         return True
 
-    except Exception:
+    except:
         if conn:
             conn.rollback()
+        print("Fail")
         return False
-
+        
     finally:
         if conn:
             conn.close()
@@ -240,14 +242,13 @@ def delete_base_model(bmid):
         cursor.execute("DELETE FROM BaseModel WHERE bmid = %s", (bmid,))
 
         conn.commit()
-        cursor.close()
+        print("Success")
         return True
-
-    except Exception as e:
+    except:
         if conn:
             conn.rollback()
+        print("Fail")
         return False
-
     finally:
         if conn:
             conn.close()
@@ -272,14 +273,15 @@ def list_internet_service(bmid):
 
         cursor.execute(query, (bmid,))
         rows = cursor.fetchall()
+        if not rows:
+            print("Fail")
+            return False
         for row in rows:
             print(f"{row[0]},{row[1]},{row[2]}")
-
         return True
     except:
         print("Fail")
         return False
-
     finally:
         conn.close()
 
@@ -308,15 +310,15 @@ def count_customized_model(*bmid_list):
 
         cursor.execute(query, bmid_list)
         rows = cursor.fetchall()
+        if not rows:
+            print("Fail")
+            return False
         for row in rows:
             print(f"{row[0]},{row[1]},{row[2]}")
-
         return True
-
     except:
         print("Fail")
         return False
-
     finally:
         conn.close()
 
@@ -340,16 +342,15 @@ def topN_duration_config(uid, N):
 
         cursor.execute(query, (uid, N))
         rows = cursor.fetchall()
-
+        if not rows:
+            print("Fail")
+            return False
         for row in rows:
             print(f"{row[0]},{row[1]},{row[2]},{row[3]},{row[4]}")
-
         return True
-
     except:
         print("Fail")
         return False
-
     finally:
         conn.close()
 
@@ -375,15 +376,14 @@ def listBaseModelKeyword(keyword):
 
         cursor.execute(query, (f"%{keyword}%",))
         rows = cursor.fetchall()
-
+        if not rows:
+            print("Fail")
+            return False
         for row in rows:
             print(f"{row[0]},{row[1]},{row[2]},{row[3]}")
-
         return True
-
     except:
         print("Fail")
         return False
-
     finally:
         conn.close()
