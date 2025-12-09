@@ -313,13 +313,9 @@ def count_customized_model(*bmid_list):
         """
 
         cursor.execute(query, bmid_list)
-        rows = cursor.fetchall()
-
-        for row in rows:
-            print(f"{row[0]},{row[1]},{row[2]}")
+        return cursor.fetchall()
 
     except Exception as e:
-        print("False")
         return
 
     finally:
