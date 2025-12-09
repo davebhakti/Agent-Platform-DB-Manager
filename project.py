@@ -167,6 +167,7 @@ def import_data(folder_name):
     print("True")
     return True
 
+"""Question 2"""
 def insert_agent_client(uid, username, email, cardno, cardholder, expire, cvv, zip_code, interests):
     conn = get_connection()
     if conn is None:
@@ -192,6 +193,103 @@ def insert_agent_client(uid, username, email, cardno, cardholder, expire, cvv, z
         if conn:
             conn.close()
 
+"""Question 3"""
+def add_customized_model(mid, bmid):
+    conn = None
+    try:
+        conn = get_connection()
+        if conn is None:
+            print("Fail")
+            return False
+
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "INSERT INTO CustomizedModel (bmid, mid) VALUES (%s, %s)",
+            (bmid, mid)
+        )
+
+        conn.commit()
+        cursor.close()
+        print("Success")
+        return True
+
+    except Exception:
+        if conn:
+            conn.rollback()
+        print("Fail")
+        return False
+
+    finally:
+        if conn:
+            conn.close()
+
+""" Question 4 """
+def delete_base_model(bmid):
+    conn = None
+    try:
+        conn = get_connection()
+        if conn is None:
+            print("Fail")
+            return False
+
+        cursor = conn.cursor()
+
+        cursor.execute("DELETE FROM ModelServices WHERE bmid = %s", (bmid,))
+        cursor.execute("DELETE FROM ModelConfigurations WHERE bmid = %s", (bmid,))
+        cursor.execute("DELETE FROM CustomizedModel WHERE bmid = %s", (bmid,))
+        cursor.execute("DELETE FROM BaseModel WHERE bmid = %s", (bmid,))
+
+        conn.commit()
+        cursor.close()
+        print("Success")
+        return True
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print("Fail")
+        return False
+
+    finally:
+        if conn:
+            conn.close()
+
+"""Question 5 """
+def list_internet_service(bmid):
+    conn = None
+    try:
+        conn = get_connection()
+        if conn is None:
+            return False
+
+        cursor = conn.cursor()
+
+        query = """
+            SELECT i.sid, i.endpoints, i.provider
+            FROM ModelServices ms
+            JOIN InternetService i ON ms.sid = i.sid
+            WHERE ms.bmid = %s
+            ORDER BY i.provider ASC
+        """
+
+        cursor.execute(query, (bmid,))
+        rows = cursor.fetchall()
+
+        for row in rows:
+            print(f"{row[0]},{row[1]},{row[2]}")
+
+        cursor.close()
+        return True
+
+    except Exception:
+        return False
+
+    finally:
+        if conn:
+            conn.close()
+
+"""Question 8"""
 def listBaseModelKeyword(keyword):
     conn = get_connection()
     if conn is None:
