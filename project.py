@@ -215,12 +215,22 @@ def add_customized_model(mid, bmid):
         print("Success")
         return True
 
-    except:
+    '''except:
         if conn:
             conn.rollback()
         print("Fail")
         return False
         
+    finally:
+        if conn:
+            conn.close()'''
+    except mysql.connector.Error as e:
+        # Rollback on any DB error
+        if conn:
+            conn.rollback()
+        print("Fail")
+        return False
+
     finally:
         if conn:
             conn.close()
