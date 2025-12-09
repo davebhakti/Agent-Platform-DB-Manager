@@ -277,7 +277,7 @@ def list_internet_service(bmid):
             print("Fail")
             return False
         for row in rows:
-            print(f"{row[0]},{row[1]},{row[2]}")
+            print(f"{row[0]}, {row[1]}, {row[2]}")
         return True
     except:
         print("Fail")
