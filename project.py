@@ -272,7 +272,6 @@ def list_internet_service(bmid):
 
         cursor.execute(query, (bmid,))
         rows = cursor.fetchall()
-        print("Table: sid,endpoint,provider")
         for row in rows:
             print(f"{row[0]},{row[1]},{row[2]}")
 
@@ -309,7 +308,6 @@ def count_customized_model(*bmid_list):
 
         cursor.execute(query, bmid_list)
         rows = cursor.fetchall()
-        print("Table: bmid,description,customizedModelCount")
         for row in rows:
             print(f"{row[0]},{row[1]},{row[2]}")
 
@@ -343,7 +341,6 @@ def topN_duration_config(uid, N):
         cursor.execute(query, (uid, N))
         rows = cursor.fetchall()
 
-        print("Table: uid,cid,label,content,duration")
         for row in rows:
             print(f"{row[0]},{row[1]},{row[2]},{row[3]},{row[4]}")
 
@@ -379,7 +376,6 @@ def listBaseModelKeyword(keyword):
         cursor.execute(query, (f"%{keyword}%",))
         rows = cursor.fetchall()
 
-        print("Table: bmid,sid,provider,domain")
         for row in rows:
             print(f"{row[0]},{row[1]},{row[2]},{row[3]}")
 
