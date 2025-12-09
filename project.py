@@ -289,6 +289,44 @@ def list_internet_service(bmid):
         if conn:
             conn.close()
 
+""" Question 6 """
+def count_customized_model(*bmid_list):
+    if len(bmid_list) == 1 and isinstance(bmid_list[0], list):
+        bmid_list = bmid_list[0]
+
+    conn = get_connection()
+    if conn is None:
+        return
+
+    try:
+        cursor = conn.cursor()
+
+        placeholders = ",".join(["%s"] * len(bmid_list))
+
+        query = f"""
+            SELECT b.bmid, b.description, COUNT(c.mid) AS customizedModelCount
+            FROM BaseModel b
+            LEFT JOIN CustomizedModel c ON b.bmid = c.bmid
+            WHERE b.bmid IN ({placeholders})
+            GROUP BY b.bmid
+            ORDER BY b.bmid ASC
+        """
+
+        cursor.execute(query, bmid_list)
+        rows = cursor.fetchall()
+
+        for row in rows:
+            print(f"{row[0]},{row[1]},{row[2]}")
+
+    except Exception as e:
+        print("False")
+        return
+
+    finally:
+        if conn:
+            conn.close()
+
+
 """Question 8"""
 def listBaseModelKeyword(keyword):
     conn = get_connection()
