@@ -184,11 +184,12 @@ def insert_agent_client(uid, username, email, cardno, cardholder, expire, cvv, z
         )
 
         conn.commit()
-        return
+        return True
 
     except Exception:
-        conn.rollback()
-        return
+        if conn:
+            conn.rollback(
+        return False
     finally:
         if conn:
             conn.close()
@@ -211,13 +212,11 @@ def add_customized_model(mid, bmid):
 
         conn.commit()
         cursor.close()
-        print("Success")
         return True
 
     except Exception:
         if conn:
             conn.rollback()
-        print("Fail")
         return False
 
     finally:
@@ -242,13 +241,11 @@ def delete_base_model(bmid):
 
         conn.commit()
         cursor.close()
-        print("Success")
         return True
 
     except Exception as e:
         if conn:
             conn.rollback()
-        print("Fail")
         return False
 
     finally:
@@ -261,7 +258,7 @@ def list_internet_service(bmid):
     try:
         conn = get_connection()
         if conn is None:
-            return False
+            return []
 
         cursor = conn.cursor()
 
@@ -275,15 +272,10 @@ def list_internet_service(bmid):
 
         cursor.execute(query, (bmid,))
         rows = cursor.fetchall()
-
-        for row in rows:
-            print(f"{row[0]},{row[1]},{row[2]}")
-
+        return rows
         cursor.close()
-        return True
-
-    except Exception:
-        return False
+   except Exception:
+        return []
 
     finally:
         if conn:
@@ -296,7 +288,7 @@ def count_customized_model(*bmid_list):
 
     conn = get_connection()
     if conn is None:
-        return
+        return []
 
     try:
         cursor = conn.cursor()
@@ -313,10 +305,11 @@ def count_customized_model(*bmid_list):
         """
 
         cursor.execute(query, bmid_list)
-        return cursor.fetchall()
+        rows = cursor.fetchall()
+        return rows
 
     except Exception as e:
-        return
+        return[]
 
     finally:
         if conn:
@@ -326,7 +319,7 @@ def count_customized_model(*bmid_list):
 def topN_duration_config(uid, N):
     conn = get_connection()
     if conn is None:
-        return
+        return []
 
     try:
         cursor = conn.cursor()
@@ -343,12 +336,11 @@ def topN_duration_config(uid, N):
         cursor.execute(query, (uid, N))
         rows = cursor.fetchall()
 
-        for row in rows:
-            print(f"{row[0]},{row[1]},{row[2]},{row[3]},{row[4]}")
-
+        return rows
+        
     except Exception as e:
         print("False")
-        return
+        return[]
 
     finally:
         if conn:
@@ -377,14 +369,10 @@ def listBaseModelKeyword(keyword):
         cursor.execute(query, (f"%{keyword}%",))
         results = cursor.fetchall()
 
-        for row in results:
-            print(f"{row[0]},{row[1]},{row[2]},{row[3]}")
-
-        return
+        return results
 
     except Exception as e:
-        print("False")
-        return
+        return []
 
     finally:
         if conn:
