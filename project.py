@@ -277,7 +277,10 @@ def list_internet_service(bmid):
             print("Fail")
             return False
         for row in rows:
-            print(f"{row[0]}, {row[1]}, {row[2]}")
+            sid = int(row[0])
+            endpoint = str(row[1])
+            provider = str(row[2])
+            print(f"{sid},{endpoint},{provider}")
         return True
     except:
         print("Fail")
