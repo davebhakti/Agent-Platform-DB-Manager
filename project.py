@@ -242,9 +242,16 @@ def delete_base_model(bmid):
         cursor.execute("DELETE FROM CustomizedModel WHERE bmid = %s", (bmid,))
         cursor.execute("DELETE FROM BaseModel WHERE bmid = %s", (bmid,))
 
+        # NEW treat it as a failure if basemodel cant delete
+        if cursor.rowcount == 0:
+            conn.rollback()
+            print("Fail")
+            return False
+
         conn.commit()
         print("Success")
         return True
+
     except:
         if conn:
             conn.rollback()
