@@ -272,13 +272,17 @@ def list_internet_service(bmid):
 
         cursor.execute(query, (bmid,))
         rows = cursor.fetchall()
-        return rows
-        cursor.close()
-    except Exception:
-        return []
+        print("Table: sid,endpoint,provider")
+        for row in rows:
+            print(f"{row[0]},{row[1]},{row[2]}")
+
+        return True
+    except:
+        print("Fail")
+        return False
+
     finally:
-        if conn:
-            conn.close()
+        conn.close()
 
 """ Question 6 """
 def count_customized_model(*bmid_list):
@@ -305,14 +309,18 @@ def count_customized_model(*bmid_list):
 
         cursor.execute(query, bmid_list)
         rows = cursor.fetchall()
-        return rows
+        print("Table: bmid,description,customizedModelCount")
+        for row in rows:
+            print(f"{row[0]},{row[1]},{row[2]}")
 
-    except Exception as e:
-        return[]
+        return True
+
+    except:
+        print("Fail")
+        return False
 
     finally:
-        if conn:
-            conn.close()
+        conn.close()
 
 """Question 7"""
 def topN_duration_config(uid, N):
@@ -335,15 +343,18 @@ def topN_duration_config(uid, N):
         cursor.execute(query, (uid, N))
         rows = cursor.fetchall()
 
-        return rows
-        
-    except Exception as e:
-        print("False")
-        return[]
+        print("Table: uid,cid,label,content,duration")
+        for row in rows:
+            print(f"{row[0]},{row[1]},{row[2]},{row[3]},{row[4]}")
+
+        return True
+
+    except:
+        print("Fail")
+        return False
 
     finally:
-        if conn:
-            conn.close()
+        conn.close()
 
 """Question 8"""
 def listBaseModelKeyword(keyword):
@@ -366,13 +377,17 @@ def listBaseModelKeyword(keyword):
         """
 
         cursor.execute(query, (f"%{keyword}%",))
-        results = cursor.fetchall()
+        rows = cursor.fetchall()
 
-        return results
+        print("Table: bmid,sid,provider,domain")
+        for row in rows:
+            print(f"{row[0]},{row[1]},{row[2]},{row[3]}")
 
-    except Exception as e:
-        return []
+        return True
+
+    except:
+        print("Fail")
+        return False
 
     finally:
-        if conn:
-            conn.close()
+        conn.close()
