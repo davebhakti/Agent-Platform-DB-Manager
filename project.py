@@ -367,29 +367,36 @@ def topNDurationConfig(uid, N):
     if conn is None:
         print("Fail")
         return
+
     try:
         cursor = conn.cursor()
+
         query = """
-            SELECT c.client_uid, mc.cid, c.labels, c.content, mc.duration
-            FROM ModelConfigurations mc
-            JOIN Configuration c ON mc.cid=c.cid
-            WHERE c.client_uid=%s
-            ORDER BY mc.duration DESC
+            SELECT c.client_uid, c.cid, c.labels, c.content, MAX(mc.duration) AS duration
+            FROM Configuration c
+            JOIN ModelConfigurations mc ON mc.cid = c.cid
+            WHERE c.client_uid = %s
+            GROUP BY c.cid
+            ORDER BY duration DESC
             LIMIT %s
         """
-        cursor.execute(query,(uid,N))
+
+        cursor.execute(query, (uid, N))
         rows = cursor.fetchall()
+
         if not rows:
             print("Fail")
             return
+
         for r in rows:
             print(f"{r[0]},{r[1]},{r[2]},{r[3]},{r[4]}")
+
     except:
         print("Fail")
+
     finally:
         if conn:
             conn.close()
-
 # ------------------------------
 # Question 8: List Base Model Keyword
 # ------------------------------
